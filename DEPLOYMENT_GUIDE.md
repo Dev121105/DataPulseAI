@@ -26,7 +26,7 @@ If you haven't already, push your project to a new GitHub repository:
 3. Connect your GitHub account and select the `datapulse-ai` repository.
 4. Render will automatically detect the `render.yaml` file.
 5. You will be prompted to enter Environment Variables:
-   - `GROQ_API_KEY`: Enter your Groq API key here.
+   - `GROQ_API_KEY`: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
 6. Click **Apply**.
 
 Render will now Build and Deploy both your Backend and Frontend.

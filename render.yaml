@@ -3,19 +3,18 @@ services:
   - type: web
     name: datapulse-backend
     env: python
-    region: singapore # Optional: choose close to user or default to oregon/frankfurt
+    region: singapore
     buildCommand: cd backend && pip install -r requirements.txt
     startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.0
       - key: GROQ_API_KEY
-        sync: false # User must enter this in dashboard
+        sync: false
 
+staticSites:
   # React Frontend
-  - type: static
-    name: datapulse-frontend
-    env: static
+  - name: datapulse-frontend
     buildCommand: cd frontend && npm install && npm run build
     publishDir: frontend/dist
     routes:
