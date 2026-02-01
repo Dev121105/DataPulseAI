@@ -139,7 +139,12 @@ def process_query(request: Query):
 
         for attempt in range(max_retries):
             try:
-                response = agent.invoke({"input": request.question + instructions})
+                # FORCE chart generation if keywords are present
+                input_text = request.question + instructions
+                if any(kw in request.question.lower() for kw in ["plot", "graph", "chart", "visualize", "show me"]):
+                    input_text += "\n\nCRITICAL: The user wants a visualization. You MUST generate the JSON chart object. Fetch the data using SQL, then format it as JSON in your Final Answer."
+
+                response = agent.invoke({"input": input_text})
                 result = response["output"]
                 return {"answer": result}
             except Exception as e:
