@@ -14,5 +14,6 @@ services:
       - key: PORT
         value: 10000
       - key: GROQ_API_KEY
+        value: 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
         sync: false # User must input this in dashboard
 
