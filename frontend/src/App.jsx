@@ -3,7 +3,8 @@ import axios from 'axios';
 import LandingPage from './LandingPage';
 import ChatbotUI from './ChatbotUI';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8001';
+const API_URL = import.meta.env.VITE_API_URL;
+const API_BASE = API_URL ? (API_URL.startsWith('http') ? API_URL : `https://${API_URL}`) : 'http://localhost:8001';
 
 function App() {
     const [view, setView] = useState('landing');
