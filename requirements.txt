@@ -1,0 +1,10 @@
+streamlit
+fastapi
+uvicorn
+pydantic
+langchain-community
+langchain-groq
+pandas
+python-dotenv
+python-multipart
+sqlalchemy

@@ -1,20 +1,35 @@
-# Deployment Guide for DataPulse AI
+# Deployment Guide for DataPulse AI (Streamlit)
 
-Your project is configured for deployment on **Render**.
+Your application has been converted to **Streamlit** for easier hosting.
 
-## Step 1: Deploy on Render
-Since your code is already on GitHub at `https://github.com/Dev121105/DataPulseAI`, you just need to connect it to Render.
+## Step 1: Push Code to GitHub
+Open your terminal and run:
+```bash
+git add .
+git commit -m "Convert to Streamlit"
+git push origin main
+```
 
-1. Go to the [Render Dashboard](https://dashboard.render.com/).
-2. Click **New +** and select **Blueprint**.
-3. Connect your GitHub account and select your repository **DataPulseAI**.
-4. Render will automatically detect the `render.yaml` file.
-5. You will be prompted to enter Environment Variables:
-   - `GROQ_API_KEY`: Enter your Groq API key (starts with `gsk_...`).
-6. Click **Apply**.
+## Step 2: Deploy on Streamlit Cloud
+1. Go to [share.streamlit.io](https://share.streamlit.io/).
+2. Click **New app**.
+3. Select your repository: **DataPulseAI**.
+4. Set the **Main file path** to `streamlit_app.py`.
+5. Click **Deploy!**.
 
-Render will now Build and Deploy both your Backend and Frontend.
+## Step 3: Configure Secrets
+Once deployed, the app will need your API Key.
+1. In your app's dashboard, click **Manage app** (bottom right) -> **Settings** (three dots).
+2. Go to **Secrets**.
+3. Add your key like this:
+   ```toml
+   GROQ_API_KEY = "gsk_..."
+   ```
+4. Save.
 
-## Troubleshooting
-- **Build Fails?** Check the logs in the Render dashboard.
-- **Frontend can't connect?** Ensure the `VITE_API_URL` environment variable was correctly picked up by the frontend service.
+## Running Locally
+To test it on your machine:
+```bash
+pip install -r requirements.txt
+streamlit run streamlit_app.py
+```
