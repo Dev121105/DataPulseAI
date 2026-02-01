@@ -12,11 +12,12 @@ services:
       - key: GROQ_API_KEY
         sync: false
 
-staticSites:
   # React Frontend
-  - name: datapulse-frontend
+  - type: web
+    name: datapulse-frontend
+    env: static
     buildCommand: cd frontend && npm install && npm run build
-    publishDir: frontend/dist
+    staticPublishPath: frontend/dist
     routes:
       - type: rewrite
         source: /*
