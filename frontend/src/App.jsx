@@ -5,6 +5,7 @@ import ChatbotUI from './ChatbotUI';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8001';
 
+// The main app component that handles pages and state
 function App() {
     const [view, setView] = useState('landing');
     const [file, setFile] = useState(null);
@@ -12,25 +13,21 @@ function App() {
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
 
+    // Helper to find chart data inside the AI's message
     const extractChartData = (content) => {
         try {
-            // 1. Try to extract from ANY markdown code block (json or not)
             const codeBlockRegex = /```(?:\w*)?\s*([\s\S]*?)\s*```/g;
             const matches = [...content.matchAll(codeBlockRegex)];
 
             for (const match of matches) {
                 try {
-                    // Try parsing the content of the code block
                     const candidate = match[1].trim();
-                    // Sanitize potential single quotes to double quotes
                     const sanitized = candidate.replace(/'/g, '"');
                     const parsed = JSON.parse(candidate) || JSON.parse(sanitized);
                     if (parsed.type === 'chart') return parsed;
                 } catch (e) { }
             }
 
-            // 2. Try direct search for the specific chart pattern (aggressive)
-            // Look for the start of the chart object
             const markers = ['{"type": "chart"', '{"type":"chart"', "{'type': 'chart'", "{'type':'chart'"];
             let start = -1;
 
@@ -54,15 +51,13 @@ function App() {
                             const candidate = content.substring(start, i + 1);
                             const sanitized = candidate.replace(/'/g, '"');
                             const parsed = JSON.parse(candidate) || JSON.parse(sanitized);
-                            return parsed; // Return immediately if validity confirmed
+                            return parsed;
                         } catch (e) {
-                            // Continue searching if this parse fails
                         }
                     }
                 }
             }
 
-            // 3. Last Resort: Regex looking for the type:chart pattern loosely
             const looseMatch = content.match(/\{[\s\S]*?"type":\s*["']chart["'][\s\S]*?\}/);
             if (looseMatch) {
                 try {
@@ -76,6 +71,7 @@ function App() {
         return null;
     };
 
+    // Sends the file to the server
     const handleUpload = async (targetFile) => {
         const selected = targetFile || file;
         if (!selected) return;
@@ -94,6 +90,7 @@ function App() {
         }
     };
 
+    // Downloads the current dataset
     const handleDownload = async () => {
         try {
             const res = await axios.get(`${API_BASE}/download`, { responseType: 'blob' });
@@ -107,6 +104,7 @@ function App() {
         }
     };
 
+    // Sends message to the AI
     const sendMessage = async () => {
         if (!input.trim()) return;
 

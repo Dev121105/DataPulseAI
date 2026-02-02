@@ -3,8 +3,12 @@ import { motion, AnimatePresence, useSpring, useMotionValue } from 'framer-motio
 import ReactMarkdown from 'react-markdown';
 import { Send, Upload, Download, Bot, User, Loader2, BarChart3, ChevronLeft } from 'lucide-react';
 import ChartRenderer from './ChartRenderer';
+import Logo3D from './components/3d/Logo3D';
+import DataCard3D from './components/3d/DataCard3D';
+import NeuralBackground from './components/3d/NeuralBackground';
 import gsap from 'gsap';
 
+// Makes elements stick to the cursor
 const Magnetic = ({ children }) => {
     const ref = useRef(null);
     const rectRef = useRef(null);
@@ -15,12 +19,14 @@ const Magnetic = ({ children }) => {
     const springX = useSpring(x, springConfig);
     const springY = useSpring(y, springConfig);
 
+    // Start tracking mouse
     const handleMouseEnter = () => {
         if (ref.current) {
             rectRef.current = ref.current.getBoundingClientRect();
         }
     };
 
+    // Move execution with the mouse
     const handleMouseMove = (e) => {
         if (!rectRef.current) return;
         const { clientX, clientY } = e;
@@ -31,6 +37,7 @@ const Magnetic = ({ children }) => {
         y.set(middleY * 0.35);
     };
 
+    // Reset position when mouse leaves
     const handleMouseLeave = () => {
         x.set(0);
         y.set(0);
@@ -52,6 +59,7 @@ const Magnetic = ({ children }) => {
 
 
 
+// The wiggly line in the footer
 const MiniMagneticString = () => {
     return (
         <div
@@ -82,6 +90,7 @@ const MiniMagneticString = () => {
     );
 };
 
+// The main chat interface
 const ChatbotUI = ({ messages, input, setInput, onSend, onUpload, onDownload, setFile, loading, onBack }) => {
     const scrollRef = useRef(null);
 
@@ -93,16 +102,19 @@ const ChatbotUI = ({ messages, input, setInput, onSend, onUpload, onDownload, se
 
     const [isDragging, setIsDragging] = React.useState(false);
 
+    // When dragging a file over the window
     const onDragOver = (e) => {
         e.preventDefault();
         setIsDragging(true);
     };
 
+    // When dragging leaves the window
     const onDragLeave = (e) => {
         e.preventDefault();
         setIsDragging(false);
     };
 
+    // Handling the file drop
     const onDrop = (e) => {
         e.preventDefault();
         setIsDragging(false);
@@ -120,11 +132,13 @@ const ChatbotUI = ({ messages, input, setInput, onSend, onUpload, onDownload, se
 
     return (
         <div
-            className="flex flex-col h-screen bg-black text-slate-100 font-sans relative"
+            className="flex flex-col h-screen bg-transparent text-slate-100 font-sans relative overflow-hidden"
             onDragOver={onDragOver}
             onDragLeave={onDragLeave}
             onDrop={onDrop}
         >
+            <NeuralBackground isThinking={loading} />
+
             {isDragging && (
                 <div className="absolute inset-0 z-50 bg-orange-500/20 backdrop-blur-sm border-4 border-orange-500 border-dashed m-4 rounded-3xl flex items-center justify-center animate-pulse pointer-events-none">
                     <div className="bg-black/80 p-8 rounded-3xl border border-orange-500/50 flex flex-col items-center gap-4">
@@ -133,24 +147,38 @@ const ChatbotUI = ({ messages, input, setInput, onSend, onUpload, onDownload, se
                         <p className="text-slate-400">Release to analyze CSV</p>
                     </div>
                 </div>
-            )}
+            )
+            }
             <header className="px-6 py-4 border-b border-white/5 bg-zinc-950/80 backdrop-blur-xl flex justify-between items-center shrink-0">
                 <div className="flex items-center gap-4">
                     <Magnetic>
-                        <button onClick={onBack} className="p-2 hover:bg-white/5 rounded-lg transition-colors text-slate-400 hover:text-white">
-                            <ChevronLeft size={20} />
-                        </button>
+                        <motion.button
+                            onClick={onBack}
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="p-2 rounded-full hover:bg-slate-100 transition-colors"
+                        >
+                            <ChevronLeft size={24} className="text-slate-600" />
+                        </motion.button>
                     </Magnetic>
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-600/30">
-                            <Bot size={22} className="text-white" />
+                        <div className="relative">
+                            <div className="absolute inset-[-4px] bg-orange-500/20 rounded-xl blur-lg animate-pulse" />
+                            <div className="relativew-10 h-10 bg-orange-600 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(249,115,22,0.4)] border border-orange-400/30">
+                                <Logo3D className="w-10 h-10" isThinking={loading} />
+                            </div>
                         </div>
                         <div>
-                            <h1 className="font-bold tracking-tight">DataPulse AI</h1>
-                            <div className="flex items-center gap-1.5">
-                                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                                <span className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">System Online</span>
-                            </div>
+                            <h2 className="font-bold text-slate-800 flex items-center gap-2">
+                                DataPulse AI
+                                <span className="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 text-xs font-medium border border-indigo-100">
+                                    Beta
+                                </span>
+                            </h2>
+                            <p className="text-xs text-slate-500 flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                                Online & Ready
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -227,8 +255,12 @@ const ChatbotUI = ({ messages, input, setInput, onSend, onUpload, onDownload, se
                                         </div>
                                     )}
                                     {msg.chart && (
-                                        <div className="min-w-[300px] md:min-w-[500px] h-80">
-                                            <ChartRenderer chartConfig={msg.chart} />
+                                        <div className="py-4">
+                                            <DataCard3D className="min-w-[300px] md:min-w-[500px]">
+                                                <div className="h-80">
+                                                    <ChartRenderer chartConfig={msg.chart} />
+                                                </div>
+                                            </DataCard3D>
                                         </div>
                                     )}
                                 </div>
@@ -285,7 +317,7 @@ const ChatbotUI = ({ messages, input, setInput, onSend, onUpload, onDownload, se
                     DataPulse AI • Neural Analysis Platform
                 </p>
             </footer>
-        </div>
+        </div >
     );
 };
 

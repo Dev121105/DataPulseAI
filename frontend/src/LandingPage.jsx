@@ -1,4 +1,8 @@
 import React, { useEffect, useRef } from 'react';
+import ThreeBackground from './components/3d/ThreeBackground';
+import Showcase3D from './components/3d/Showcase3D';
+import FeatureCard3D from './components/3d/FeatureCard3D';
+import Logo3D from './components/3d/Logo3D';
 import { motion, AnimatePresence, useSpring, useMotionValue } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -145,66 +149,72 @@ const Marquee = () => {
 const Loader = ({ onComplete }) => {
     const loaderRef = useRef(null);
     const logoRef = useRef(null);
+    const textRef = useRef(null);
+    const glowRef = useRef(null);
 
     useEffect(() => {
         const tl = gsap.timeline({
             onComplete: onComplete
         });
 
+        // Initial State
+        gsap.set(logoRef.current, { y: "150vh" }); // Start below screen
+        gsap.set(textRef.current, { width: 0, opacity: 0 }); // Hidden text
+        gsap.set(glowRef.current, { opacity: 0 }); // Hidden glow
 
-        gsap.set(logoRef.current, {
-            top: "50%",
-            left: "50%",
-            xPercent: -50,
-            yPercent: -50,
-            opacity: 0,
-            y: 100,
-            scale: 1.5
-        });
-
-        tl.to(logoRef.current, {
-            opacity: 1,
-            y: -100,
-            duration: 1,
-            ease: "bounce.out"
-        })
+        tl
+            // 1. Logo rises from bottom to center
             .to(logoRef.current, {
-                scale: 1.8,
-                duration: 0.8,
-                ease: "power2.inOut"
-            }, "+=0.2")
-            .to(logoRef.current, {
-                top: "46px",
-                left: "130px",
-                xPercent: -50,
-                yPercent: -50,
-                x: 0,
                 y: 0,
-                scale: 0.714,
-                duration: 1.5,
-                ease: "bounce.out"
-            }, "+=0.3")
+                duration: 1.2,
+                ease: "power4.out"
+            })
+            // 2. Glow appears when centered
+            .to(glowRef.current, {
+                opacity: 1,
+                duration: 0.5
+            }, "-=0.3") // Overlap slightly with movement
+
+            // 3. Wait for 2 blinks (approx 2s since interval is 1s)
+            .to({}, { duration: 2.2 })
+
+            // 4. Text appears from left to right (mask reveal)
+            .to(textRef.current, {
+                width: "auto",
+                opacity: 1,
+                duration: 1,
+                ease: "power3.out"
+            })
+
+            // 5. Hold briefly then fade out
             .to(loaderRef.current, {
-                backgroundColor: "rgba(0,0,0,0)",
+                opacity: 0,
                 duration: 0.8,
+                delay: 0.5,
                 ease: "power2.inOut"
-            }, "-=0.4");
+            });
 
         return () => tl.kill();
     }, [onComplete]);
 
     return (
         <div ref={loaderRef} className="fixed inset-0 z-[100] bg-black flex items-center justify-center">
-            <div ref={logoRef} className="fixed flex items-center gap-3 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                <div className="relative">
-                    <div className="absolute inset-[-8px] bg-orange-500/20 rounded-2xl blur-2xl animate-pulse" />
-                    <div className="absolute inset-[-4px] bg-orange-400/10 rounded-2xl blur-xl animate-pulse delay-75" />
+            <div className="flex items-center justify-center relative">
 
-                    <div className="relative w-14 h-14 bg-orange-600 rounded-2xl flex items-center justify-center shadow-[0_0_50px_rgba(249,115,22,0.6)] border border-orange-400/30">
-                        <Bot size={32} className="text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
-                    </div>
+                {/* Logo Container - z-10 to stay on top */}
+                <div ref={logoRef} className="relative z-10">
+                    {/* Dynamic Glow - Appears on center */}
+                    <div ref={glowRef} className="absolute inset-[-20px] bg-orange-500/40 blur-3xl rounded-full opacity-0" />
+
+                    {/* 3D Logo - Responsive size */}
+                    <Logo3D className="w-16 h-16 md:w-24 md:h-24" isLoader={true} />
                 </div>
-                <span className="text-3xl font-black tracking-tighter text-white">DATAPULSE AI</span>
+
+                {/* Text Container - Masked reveal, negative margin to pull closer/behind */}
+                <div ref={textRef} className="overflow-hidden whitespace-nowrap h-16 md:h-24 flex items-center -ml-3 md:-ml-4 pl-3 md:pl-4 z-0">
+                    <span className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tighter text-white">DATAPULSE AI</span>
+                </div>
+
             </div>
         </div>
     );
@@ -223,32 +233,60 @@ const LandingPage = ({ onStart }) => {
         window.scrollTo(0, 0);
 
         const ctx = gsap.context(() => {
-            gsap.from('.nav-link', {
-                opacity: 0,
-                y: -20,
-                stagger: 0.1,
-                duration: 0.8,
+            // 1. Navbar Enters from Top (First)
+            // 1. Navbar Container (Background) Enters
+            gsap.to('nav', {
+                y: 0,
+                opacity: 1,
+                duration: 1,
                 ease: "power3.out"
             });
 
-            gsap.from('.nav-action', {
-                opacity: 0,
-                scale: 0.8,
-                duration: 0.8,
-                ease: "back.out(1.7)"
-            });
-
-            gsap.fromTo('.hero-content > p, .hero-content > div:last-child',
-                { y: 100, opacity: 0 },
+            // 2. Navbar Items Stagger In
+            gsap.fromTo('.nav-item',
+                { y: -20, opacity: 0 },
                 {
                     y: 0,
                     opacity: 1,
-                    duration: 1.2,
-                    stagger: 0.2,
-                    ease: 'power4.out',
-                    delay: 1.0
+                    duration: 0.8,
+                    stagger: 0.15,
+                    ease: "back.out(1.2)",
+                    delay: 0.3
                 }
             );
+
+            // 2. Main Content Enters (After Navbar COMPLETELY finishes)
+            // Navbar delta = 1s duration + (2 * 0.15 stagger) = 1.3s total
+            const tl = gsap.timeline({ delay: 1 }); // Wait for nav to settle
+
+            tl.fromTo('.hero-content > div:first-child', // Zap badge
+                { y: 20, opacity: 0 },
+                { y: 0, opacity: 1, duration: 0.8 },
+                "start"
+            )
+                .fromTo('.hero-content h1 span', // Main Letters
+                    { y: 50, opacity: 0, filter: "blur(10px)" },
+                    {
+                        y: 0,
+                        opacity: 1,
+                        filter: "blur(0px)",
+                        duration: 1,
+                        stagger: 0.05,
+                        ease: "power3.out"
+                    },
+                    "start+=0.85" // Starts immediately after Badge (0.8s) finishes
+                )
+                .fromTo('.hero-content > p, .hero-content > div:last-child', // Subtext & Buttons
+                    { y: 30, opacity: 0 },
+                    {
+                        y: 0,
+                        opacity: 1,
+                        duration: 1,
+                        stagger: 0.2
+                    },
+                    "-=0.5"
+                );
+
 
 
             gsap.from('.feature-card', {
@@ -375,25 +413,35 @@ const LandingPage = ({ onStart }) => {
                 />
             </div>
 
-            <nav className={`fixed top-0 w-full z-50 px-8 py-6 flex justify-between items-center backdrop-blur-xl border-b border-white/5 bg-black/50 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
-                <div className="flex items-center gap-3 group cursor-pointer">
+            {/* Navbar: Initially Hidden (opacity-0, -translate-y-full) to prevent FOUC */}
+            <nav className="fixed top-0 w-full z-50 px-8 py-6 flex justify-between items-center backdrop-blur-xl border-b border-white/5 bg-black/50 opacity-0 -translate-y-full nav-container">
+                <div className="flex items-center gap-3 group cursor-pointer nav-item opacity-0" onClick={() => window.location.reload()}>
                     <div className="relative">
                         {/* Neural Glow Aura */}
-                        <div className="absolute inset-[-8px] bg-orange-500/20 rounded-2xl blur-2xl animate-pulse" />
-                        <div className="absolute inset-[-4px] bg-orange-400/10 rounded-2xl blur-xl animate-pulse delay-75" />
+                        <div className="absolute inset-[-8px] bg-orange-500/20 rounded-2xl blur-xl animate-pulse" />
 
-                        <div className="relative w-10 h-10 bg-orange-600 rounded-xl flex items-center justify-center shadow-[0_0_50px_rgba(249,115,22,0.6)] border border-orange-400/30 group-hover:rotate-12 transition-transform">
-                            <Bot size={24} className="text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
+                        {/* 3D Logo Component */}
+                        <div className="relative w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center shadow-[0_0_50px_rgba(249,115,22,0.6)] border border-orange-400/30 transition-transform">
+                            <Logo3D />
                         </div>
                     </div>
                     <span className="text-xl font-black tracking-tighter text-white">DATAPULSE AI</span>
                 </div>
-                <div className="hidden md:flex items-center gap-8 text-sm font-bold text-slate-400 uppercase tracking-widest">
-                    <a href="#features" className="nav-link hover:text-white transition-colors">Features</a>
-                    <a href="#showcase" className="nav-link hover:text-white transition-colors">Experience</a>
-                    <a href="#contact" className="nav-link hover:text-white transition-colors">Contact</a>
+                <div className="hidden md:flex items-center gap-8 text-sm font-bold text-slate-400 uppercase tracking-widest nav-item opacity-0">
+                    <a href="#showcase" className="relative group hover:text-white transition-colors">
+                        Experience
+                        <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                    <a href="#features" className="relative group hover:text-white transition-colors">
+                        Features
+                        <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                    <a href="#contact" className="relative group hover:text-white transition-colors">
+                        Contact
+                        <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
+                    </a>
                 </div>
-                <div className="nav-action">
+                <div className="nav-action nav-item opacity-0">
                     <Magnetic>
                         <button onClick={onStart} className="btn-wave-fill bg-white text-slate-950 px-8 py-3 rounded-2xl font-bold text-sm transition-all hover:scale-105 active:scale-95 shadow-xl shadow-white/10">
                             LAUNCH PLATFORM
@@ -402,8 +450,10 @@ const LandingPage = ({ onStart }) => {
                 </div>
             </nav>
 
-            <section className="relative pt-44 pb-32 px-6">
-                <div className="max-w-[90rem] mx-auto text-center hero-content">
+            <section className="relative pt-44 pb-32 px-6 overflow-hidden">
+                {!isLoading && <ThreeBackground />}
+
+                <div className="max-w-[90rem] mx-auto text-center hero-content relative z-10">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={!isLoading ? {
@@ -422,27 +472,27 @@ const LandingPage = ({ onStart }) => {
                         <span>Intelligence Redefined</span>
                     </motion.div>
                     <h1 className="text-5xl md:text-7xl lg:text-8xl font-black mb-10 tracking-[-0.05em] leading-[0.9] text-white group cursor-default pb-4">
-                        <span className="inline-flex gap-1 mr-4">
+                        <span className="inline-flex gap-1 mr-4 group/data cursor-default">
                             {["D", "A", "T", "A"].map((char, i) => (
                                 <motion.span
                                     key={i}
                                     initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
                                     animate={!isLoading ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
                                     transition={{ delay: 0.8 + i * 0.15, duration: 0.8 }}
-                                    className="inline-block transition-all duration-700 group-hover:drop-shadow-[0_0_50px_rgba(255,255,255,0.3)] group-hover:text-orange-100"
+                                    className="inline-block transition-all duration-300 group-hover/data:text-white group-hover/data:scale-110"
                                 >
                                     {char}
                                 </motion.span>
                             ))}
                         </span> <br />
-                        <span className="inline-flex">
-                            {["E", "V", "O", "L", "V", "E", "D", "."].map((char, i) => (
+                        <span className="inline-flex group/evolved cursor-default">
+                            {["E", "V", "O", "L", "V", "E", "D"].map((char, i) => (
                                 <motion.span
                                     key={i}
                                     initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
                                     animate={!isLoading ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
                                     transition={{ delay: 1.4 + i * 0.1, duration: 0.8 }}
-                                    className="inline-block text-transparent bg-clip-text bg-gradient-to-b from-orange-200 to-orange-600 transition-all duration-700 group-hover:drop-shadow-[0_0_50px_rgba(249,115,22,0.5)]"
+                                    className="inline-block text-transparent bg-clip-text bg-gradient-to-b from-orange-200 to-orange-600 transition-all duration-300"
                                 >
                                     {char}
                                 </motion.span>
@@ -488,33 +538,8 @@ const LandingPage = ({ onStart }) => {
                         </div>
                     </div>
 
-                    <div className="showcase-mockup order-1 lg:order-2">
-                        <div className="relative group p-2 bg-gradient-to-br from-orange-500/20 to-transparent rounded-[2.5rem] border border-white/10 shadow-2xl overflow-hidden backdrop-blur-3xl hover:border-orange-500/40 hover:shadow-[0_0_80px_rgba(249,115,22,0.15)] transition-all duration-500">
-                            <div className="bg-slate-950 rounded-[2rem] overflow-hidden aspect-[4/3] relative group-hover:scale-[1.005] transition-transform duration-700">
-                                <div className="absolute inset-0 p-8 space-y-6 opacity-40">
-                                    <div className="flex gap-4">
-                                        <div className="w-8 h-8 rounded-lg bg-orange-600" />
-                                        <div className="bg-white/5 border border-white/10 p-4 rounded-2xl rounded-tl-none w-2/3 space-y-2">
-                                            <div className="h-2 w-full bg-white/10 rounded" />
-                                            <div className="h-2 w-3/4 bg-white/10 rounded" />
-                                        </div>
-                                    </div>
-                                    <div className="flex gap-4 flex-row-reverse">
-                                        <div className="w-8 h-8 rounded-lg bg-slate-800" />
-                                        <div className="bg-orange-600 p-4 rounded-2xl rounded-tr-none w-1/2">
-                                            <div className="h-2 w-full bg-white/20 rounded" />
-                                        </div>
-                                    </div>
-                                    <div className="bg-slate-900/50 border border-white/5 rounded-2xl p-6 h-40 flex items-end gap-2 pr-12">
-                                        <div className="flex-1 bg-orange-500/50 h-[30%] rounded-t-lg" />
-                                        <div className="flex-1 bg-orange-500/70 h-[60%] rounded-t-lg" />
-                                        <div className="flex-1 bg-orange-500 h-[85%] rounded-t-lg shadow-[0_0_20px_rgba(249,115,22,0.5)]" />
-                                        <div className="flex-1 bg-orange-500/60 h-[45%] rounded-t-lg" />
-                                    </div>
-                                </div>
-                                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full duration-1000 transition-transform" />
-                            </div>
-                        </div>
+                    <div className="showcase-mockup order-1 lg:order-2 h-[400px] w-full">
+                        {!isLoading && <Showcase3D />}
                     </div>
                 </div>
             </section>
@@ -534,18 +559,21 @@ const LandingPage = ({ onStart }) => {
                             { icon: <Table size={28} />, label: "STRUCTURED", color: "emerald" },
                             { icon: <Download size={28} />, label: "PERSISTENT", color: "amber" }
                         ].map((item, i) => {
-                            const colors = capabilityColors[item.color];
+                            const colors = item.label.includes("Processing") ? { bg: "bg-orange-600", border: "border-orange-500", glow: "shadow-[0_0_50px_rgba(249,115,22,0.3)]", text: "text-white" } :
+                                item.label.includes("Analysis") ? { bg: "bg-blue-600", border: "border-blue-500", glow: "shadow-[0_0_50px_rgba(59,130,246,0.3)]", text: "text-white" } : // Global
+                                    item.label.includes("Visualization") ? { bg: "bg-yellow-500", border: "border-yellow-400", glow: "shadow-[0_0_50px_rgba(234,179,8,0.3)]", text: "text-white" } : // Speed
+                                        { bg: "bg-emerald-600", border: "border-emerald-500", glow: "shadow-[0_0_50px_rgba(16,185,129,0.3)]", text: "text-white" }; // Secure
+
                             return (
                                 <motion.div
                                     key={i}
-                                    whileHover={{ y: -10 }}
-                                    className={`feature-card p-12 rounded-[3.5rem] bg-slate-900/80 border border-white/10 hover:bg-slate-900/90 backdrop-blur-xl transition-all text-center group cursor-default hover:border-orange-500/30 hover:shadow-2xl ${colors.glow}`}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: i * 0.1 }}
+                                    className="h-[420px]" // Fixed height for tilt container
                                 >
-                                    <div className={`w-20 h-20 mx-auto mb-8 ${colors.bg} rounded-[2rem] flex items-center justify-center border ${colors.border} group-hover:scale-110 group-hover:rotate-6 transition-all`}>
-                                        <div className={colors.text}>{item.icon}</div>
-                                    </div>
-                                    <h3 className="text-2xl font-black text-white mb-4 tracking-tight">{item.label} DATA</h3>
-                                    <p className="text-slate-500 font-medium leading-relaxed">Advanced algorithms ensure your data is processed with surgical precision and absolute clarity.</p>
+                                    {!isLoading && <FeatureCard3D item={item} colors={colors} />}
                                 </motion.div>
                             );
                         })}
