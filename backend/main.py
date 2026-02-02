@@ -120,23 +120,19 @@ def process_query(request: Query):
         active_table = get_active_table()
         db_engine = SQLDatabase.from_uri(f"sqlite:///{DB_PATH}")
         
-        # --- MODEL FALLBACK LOGIC ---
-        primary_model = "llama-3.3-70b-versatile"
-        fallback_model = "llama-3.1-8b-instant"
-        current_model_name = primary_model
-        
-        def get_agent(model_name):
-            llm = ChatGroq(model=model_name, temperature=0, api_key=key)
-            return create_sql_agent(
-                llm=llm,
-                db=db_engine,
-                agent_type="zero-shot-react-description",
-                verbose=False,
-                handle_parsing_errors=True
-            )
+        llm = ChatGroq(
+            model="llama-3.3-70b-versatile",
+            temperature=0,
+            api_key=key
+        )
 
-        # Initialize with primary
-        agent = get_agent(primary_model)
+        agent = create_sql_agent(
+            llm=llm,
+            db=db_engine,
+            agent_type="zero-shot-react-description",
+            verbose=False,
+            handle_parsing_errors=True
+        )
 
         # Build context from history
         context_str = ""
@@ -173,32 +169,12 @@ def process_query(request: Query):
 
                 response = agent.invoke({"input": input_text})
                 result = response["output"]
-                
-                # Append a tiny note if we used fallback
-                if current_model_name == fallback_model:
-                     result += "\n\n_(Response generated using Turbo Mode due to high traffic)_"
-                
                 return {"answer": result}
-
             except Exception as e:
-                err_msg = str(e).lower()
-                if "rate_limit" in err_msg or "429" in err_msg:
-                    print(f"⚠️ Rate Limit Hit on {current_model_name}!")
-                    
-                    # If on primary, switch to fallback
-                    if current_model_name == primary_model:
-                        print("🔄 Switching to Fallback Model (8b)...")
-                        current_model_name = fallback_model
-                        agent = get_agent(fallback_model)
-                        continue # Retry with new model
-                    
-                    # If already on fallback, backoff wait
-                    if attempt < max_retries - 1:
-                        sleep_time = base_delay * (2 ** attempt) + random.uniform(0, 1)
-                        print(f"⏳ Retrying in {sleep_time:.2f}s...")
-                        time.sleep(sleep_time)
-                    else:
-                        raise e
+                if ("rate_limit" in str(e) or "429" in str(e)) and attempt < max_retries - 1:
+                    sleep_time = base_delay * (2 ** attempt) + random.uniform(0, 1)
+                    print(f"Rate limit hit. Retrying in {sleep_time:.2f}s...")
+                    time.sleep(sleep_time)
                 else:
                     raise e
 
