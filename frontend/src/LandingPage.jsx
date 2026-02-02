@@ -555,9 +555,9 @@ const LandingPage = ({ onStart }) => {
                     </div>
                     <div className="grid md:grid-cols-3 gap-8">
                         {[
-                            { icon: <Zap size={28} />, label: "REALTIME", color: "orange" },
-                            { icon: <Table size={28} />, label: "STRUCTURED", color: "emerald" },
-                            { icon: <Download size={28} />, label: "PERSISTENT", color: "amber" }
+                            { icon: <Zap size={28} />, label: "REALTIME", color: "orange", desc: "Instantaneous data processing powered by Groq LPU inference for sub-second insights." },
+                            { icon: <Table size={28} />, label: "STRUCTURED", color: "emerald", desc: "Automatic normalization and cleaning of messy CSV datasets into query-ready SQL tables." },
+                            { icon: <Download size={28} />, label: "PERSISTENT", color: "amber", desc: "Securely export your analyzed data and visualizations for professional reporting." }
                         ].map((item, i) => {
                             const colors = item.label.includes("Processing") ? { bg: "bg-orange-600", border: "border-orange-500", glow: "shadow-[0_0_50px_rgba(249,115,22,0.3)]", text: "text-white" } :
                                 item.label.includes("Analysis") ? { bg: "bg-blue-600", border: "border-blue-500", glow: "shadow-[0_0_50px_rgba(59,130,246,0.3)]", text: "text-white" } : // Global
