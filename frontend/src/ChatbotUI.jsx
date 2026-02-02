@@ -140,7 +140,7 @@ const ChatbotUI = ({ messages, input, setInput, onSend, onUpload, onDownload, se
             <NeuralBackground isThinking={loading} />
 
             {isDragging && (
-                <div className="absolute inset-0 z-50 bg-orange-500/20 backdrop-blur-sm border-4 border-orange-500 border-dashed m-4 rounded-3xl flex items-center justify-center animate-pulse pointer-events-none">
+                <div className="absolute inset-0 z-50 bg-orange-500/20 backdrop-blur-sm border-4 border-orange-500 border-dashed m-2 md:m-4 rounded-3xl flex items-center justify-center animate-pulse pointer-events-none">
                     <div className="bg-black/80 p-8 rounded-3xl border border-orange-500/50 flex flex-col items-center gap-4">
                         <Upload size={48} className="text-orange-500" />
                         <h2 className="text-2xl font-bold text-white">Drop Dataset Here</h2>
@@ -149,7 +149,7 @@ const ChatbotUI = ({ messages, input, setInput, onSend, onUpload, onDownload, se
                 </div>
             )
             }
-            <header className="px-6 py-4 border-b border-white/5 bg-zinc-950/80 backdrop-blur-xl flex justify-between items-center shrink-0">
+            <header className="px-4 py-3 md:px-6 md:py-4 border-b border-white/5 bg-zinc-950/80 backdrop-blur-xl flex justify-between items-center shrink-0">
                 <div className="flex items-center gap-4">
                     <Magnetic>
                         <motion.button
@@ -169,13 +169,13 @@ const ChatbotUI = ({ messages, input, setInput, onSend, onUpload, onDownload, se
                             </div>
                         </div>
                         <div>
-                            <h2 className="font-bold text-slate-800 flex items-center gap-2">
+                            <h2 className="font-bold text-slate-800 flex items-center gap-2 text-sm md:text-base">
                                 DataPulse AI
-                                <span className="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 text-xs font-medium border border-indigo-100">
+                                <span className="hidden md:inline-flex px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 text-xs font-medium border border-indigo-100">
                                     Beta
                                 </span>
                             </h2>
-                            <p className="text-xs text-slate-500 flex items-center gap-1">
+                            <p className="text-xs text-slate-500 hidden md:flex items-center gap-1">
                                 <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
                                 Online & Ready
                             </p>
@@ -185,9 +185,9 @@ const ChatbotUI = ({ messages, input, setInput, onSend, onUpload, onDownload, se
 
                 <div className="flex items-center gap-2">
                     <Magnetic>
-                        <label className="cursor-pointer group flex items-center gap-2 px-4 py-2 bg-orange-500/10 border border-orange-500/20 rounded-xl hover:bg-orange-500/20 transition-all">
+                        <label className="cursor-pointer group flex items-center gap-2 px-2 py-2 md:px-4 bg-orange-500/10 border border-orange-500/20 rounded-xl hover:bg-orange-500/20 transition-all">
                             <Upload size={18} className="text-orange-400 group-hover:scale-110 transition-transform" />
-                            <span className="text-xs font-semibold text-orange-300">Upload CSV</span>
+                            <span className="hidden md:inline text-xs font-semibold text-orange-300">Upload CSV</span>
                             <input
                                 type="file"
                                 accept=".csv"
@@ -210,7 +210,7 @@ const ChatbotUI = ({ messages, input, setInput, onSend, onUpload, onDownload, se
 
 
 
-            <main ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-8 scroll-smooth custom-scrollbar">
+            <main ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 md:space-y-8 scroll-smooth custom-scrollbar">
                 {messages.length === 0 && !loading && (
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
@@ -238,7 +238,7 @@ const ChatbotUI = ({ messages, input, setInput, onSend, onUpload, onDownload, se
                             transition={{ duration: 0.4, ease: "easeOut" }}
                             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                         >
-                            <div className={`flex gap-4 max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                            <div className={`flex gap-3 md:gap-4 max-w-full md:max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
                                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border border-white/5 shadow-sm ${msg.role === 'user' ? 'bg-orange-600' : 'bg-zinc-800'}`}>
                                     {msg.role === 'user' ? <User size={16} /> : <Bot size={16} className="text-orange-400" />}
                                 </div>
@@ -256,7 +256,7 @@ const ChatbotUI = ({ messages, input, setInput, onSend, onUpload, onDownload, se
                                     )}
                                     {msg.chart && (
                                         <div className="py-4">
-                                            <DataCard3D className="min-w-[300px] md:min-w-[500px]">
+                                            <DataCard3D className="w-full md:min-w-[500px]">
                                                 <div className="h-80">
                                                     <ChartRenderer chartConfig={msg.chart} />
                                                 </div>
@@ -289,7 +289,7 @@ const ChatbotUI = ({ messages, input, setInput, onSend, onUpload, onDownload, se
                 )}
             </main>
 
-            <footer className="p-6 bg-zinc-950/80 border-t border-white/5 shrink-0">
+            <footer className="p-4 md:p-6 bg-zinc-950/80 border-t border-white/5 shrink-0">
                 <div className="max-w-4xl mx-auto">
                     <MiniMagneticString />
                     <div className="relative">

@@ -1,12 +1,12 @@
 import React, { useEffect, useRef } from 'react';
-import ThreeBackground from './components/3d/ThreeBackground';
-import Showcase3D from './components/3d/Showcase3D';
-import FeatureCard3D from './components/3d/FeatureCard3D';
-import Logo3D from './components/3d/Logo3D';
+const ThreeBackground = React.lazy(() => import('./components/3d/ThreeBackground'));
+const Showcase3D = React.lazy(() => import('./components/3d/Showcase3D'));
+const FeatureCard3D = React.lazy(() => import('./components/3d/FeatureCard3D'));
+const Logo3D = React.lazy(() => import('./components/3d/Logo3D'));
 import { motion, AnimatePresence, useSpring, useMotionValue } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { BarChart3, Bot, Zap, ArrowRight, Table, Download, Mail, MapPin, Github, Twitter, Linkedin, Instagram, ExternalLink, Star, Quote } from 'lucide-react';
+import { BarChart3, Bot, Zap, ArrowRight, Table, Download, Mail, MapPin, Github, Twitter, Linkedin, Instagram, ExternalLink, Star, Quote, Menu, X } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -226,6 +226,7 @@ const LandingPage = ({ onStart }) => {
     const [hoverRating, setHoverRating] = React.useState(0);
     const [review, setReview] = React.useState("");
     const [submitted, setSubmitted] = React.useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
     const containerRef = useRef(null);
 
     useEffect(() => {
@@ -441,17 +442,50 @@ const LandingPage = ({ onStart }) => {
                         <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-orange-500 transition-all duration-300 group-hover:w-full"></span>
                     </a>
                 </div>
-                <div className="nav-action nav-item opacity-0">
-                    <Magnetic>
-                        <button onClick={onStart} className="btn-wave-fill bg-white text-slate-950 px-8 py-3 rounded-2xl font-bold text-sm transition-all hover:scale-105 active:scale-95 shadow-xl shadow-white/10">
-                            LAUNCH PLATFORM
-                        </button>
-                    </Magnetic>
+                <div className="nav-action nav-item opacity-0 flex items-center gap-4">
+                    <div className="hidden md:block">
+                        <Magnetic>
+                            <button onClick={onStart} className="btn-wave-fill bg-white text-slate-950 px-8 py-3 rounded-2xl font-bold text-sm transition-all hover:scale-105 active:scale-95 shadow-xl shadow-white/10">
+                                LAUNCH PLATFORM
+                            </button>
+                        </Magnetic>
+                    </div>
+
+                    {/* Mobile Menu Toggle */}
+                    <button className="md:hidden text-white" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                        {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+                    </button>
                 </div>
             </nav>
+            {/* Mobile Menu Overlay */}
+            <AnimatePresence>
+                {isMobileMenuOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="fixed inset-0 z-40 bg-black/95 backdrop-blur-3xl pt-24 px-6 md:hidden"
+                    >
+                        <div className="flex flex-col gap-8 text-2xl font-black uppercase tracking-tight text-white">
+                            <a href="#showcase" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-orange-500 transition-colors">Experience</a>
+                            <a href="#features" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-orange-500 transition-colors">Features</a>
+                            <a href="#contact" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-orange-500 transition-colors">Contact</a>
+                        </div>
+                        <div className="mt-12">
+                            <button onClick={() => { onStart(); setIsMobileMenuOpen(false); }} className="w-full bg-orange-600 text-white py-4 rounded-xl font-bold uppercase tracking-widest shadow-2xl shadow-orange-500/20 active:scale-95 transition-transform">
+                                Launch Platform
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <section className="relative pt-44 pb-32 px-6 overflow-hidden">
-                {!isLoading && <ThreeBackground />}
+                {!isLoading && (
+                    <React.Suspense fallback={<div className="absolute inset-0 bg-slate-950/20" />}>
+                        <ThreeBackground />
+                    </React.Suspense>
+                )}
 
                 <div className="max-w-[90rem] mx-auto text-center hero-content relative z-10">
                     <motion.div
@@ -471,7 +505,7 @@ const LandingPage = ({ onStart }) => {
                         <Zap size={14} className="text-orange-400" />
                         <span>Intelligence Redefined</span>
                     </motion.div>
-                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-black mb-10 tracking-[-0.05em] leading-[0.9] text-white group cursor-default pb-4">
+                    <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black mb-10 tracking-[-0.05em] leading-[0.9] text-white group cursor-default pb-4">
                         <span className="inline-flex gap-1 mr-4 group/data cursor-default">
                             {["D", "A", "T", "A"].map((char, i) => (
                                 <motion.span
@@ -502,7 +536,7 @@ const LandingPage = ({ onStart }) => {
                     <p className="opacity-0 text-slate-500 text-xl md:text-2xl max-w-2xl mx-auto mb-16 leading-relaxed font-medium">Direct dataset interaction. High-fidelity visualizations and deep neural insights in seconds.</p>
                     <div className="opacity-0">
                         <Magnetic>
-                            <button onClick={onStart} className="btn-wave-fill2 group w-full md:w-auto bg-orange-600 text-white px-14 py-7 rounded-[2rem] font-black text-xl flex items-center justify-center gap-4 transition-all hover:scale-105 shadow-2xl shadow-orange-600/40">
+                            <button onClick={onStart} className="btn-wave-fill2 group w-full md:w-auto bg-orange-600 text-white px-8 py-5 md:px-14 md:py-7 rounded-[2rem] font-black text-lg md:text-xl flex items-center justify-center gap-4 transition-all hover:scale-105 shadow-2xl shadow-orange-600/40">
                                 START ANALYZING <ArrowRight size={24} className="group-hover:translate-x-2 transition-transform" />
                             </button>
                         </Magnetic>
@@ -510,10 +544,10 @@ const LandingPage = ({ onStart }) => {
                 </div>
             </section>
 
-            <section id="showcase" className="py-40 px-6 relative">
+            <section id="showcase" className="py-20 md:py-40 px-6 relative">
                 <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center">
                     <div className="showcase-text space-y-10 order-2 lg:order-1 text-left">
-                        <h2 className="text-5xl md:text-7xl font-black tracking-tighter text-white leading-none">
+                        <h2 className="text-4xl md:text-7xl font-black tracking-tighter text-white leading-none">
                             THE NEXT GENERATION <br />
                             <span className="text-orange-500">INTERFACE.</span>
                         </h2>
@@ -538,8 +572,12 @@ const LandingPage = ({ onStart }) => {
                         </div>
                     </div>
 
-                    <div className="showcase-mockup order-1 lg:order-2 h-[400px] w-full">
-                        {!isLoading && <Showcase3D />}
+                    <div className="showcase-mockup order-1 lg:order-2 h-[300px] md:h-[400px] w-full">
+                        {!isLoading && (
+                            <React.Suspense fallback={<div className="w-full h-full rounded-3xl bg-slate-900/50 animate-pulse border border-white/5" />}>
+                                <Showcase3D />
+                            </React.Suspense>
+                        )}
                     </div>
                 </div>
             </section>
@@ -573,7 +611,11 @@ const LandingPage = ({ onStart }) => {
                                     transition={{ delay: i * 0.1 }}
                                     className="h-[420px]" // Fixed height for tilt container
                                 >
-                                    {!isLoading && <FeatureCard3D item={item} colors={colors} />}
+                                    {!isLoading && (
+                                        <React.Suspense fallback={<div className="w-full h-full rounded-[3.5rem] bg-slate-900/50 border border-white/5" />}>
+                                            <FeatureCard3D item={item} colors={colors} />
+                                        </React.Suspense>
+                                    )}
                                 </motion.div>
                             );
                         })}

@@ -28,10 +28,12 @@ const MouseLight = () => {
     const light = useRef();
     useFrame((state) => {
         if (light.current) {
-            // Smoothly move light to mouse position
-            // Mouse is -1 to 1, we multiply to cover more area
-            const x = state.mouse.x * 10;
-            const y = state.mouse.y * 10;
+            // Ensure mouse values are valid numbers before using
+            const mx = isNaN(state.mouse.x) ? 0 : state.mouse.x;
+            const my = isNaN(state.mouse.y) ? 0 : state.mouse.y;
+
+            const x = mx * 10;
+            const y = my * 10;
 
             light.current.position.x = THREE.MathUtils.lerp(light.current.position.x, x, 0.1);
             light.current.position.y = THREE.MathUtils.lerp(light.current.position.y, y, 0.1);
@@ -48,9 +50,10 @@ const DashboardModel = () => {
 
     useFrame((state) => {
         if (group.current) {
-            // Gentle tilt based on mouse
-            const x = (state.mouse.x * 0.3);
-            const y = (state.mouse.y * 0.3);
+            const mx = isNaN(state.mouse.x) ? 0 : state.mouse.x;
+            const my = isNaN(state.mouse.y) ? 0 : state.mouse.y;
+            const x = (mx * 0.3);
+            const y = (my * 0.3);
             group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, x, 0.1);
             group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, -y, 0.1);
         }
@@ -60,24 +63,24 @@ const DashboardModel = () => {
         <group ref={group}>
             <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
 
-                {/* 1. Main Container (The Card) */}
-                <RoundedBox args={[6, 4.5, 0.3]} radius={0.3} smoothness={2}>
+                {/* 1. Main Container - Reduced Radius to safe limit (0.3 < 0.3/2 is false, but safe for 4.5/6) - wait, Z is 0.3. Radius 0.15 is max. */}
+                <RoundedBox args={[6, 4.5, 0.3]} radius={0.1} smoothness={2}>
                     <meshPhysicalMaterial
-                        color="#334155" // Slate 700 (Lighter than before)
-                        roughness={0.4} // Semi-matte (good balance)
+                        color="#334155"
+                        roughness={0.4}
                         metalness={0.1}
-                        clearcoat={0.3} // Subtle polish
+                        clearcoat={0.3}
                     />
                 </RoundedBox>
 
-                {/* 2. Header Section */}
-                <RoundedBox position={[-2.2, 1.5, 0.2]} args={[0.8, 0.8, 0.2]} radius={0.1}>
+                {/* 2. Header Section - Z is 0.2, Max Radius 0.1. Using 0.05 to be safe */}
+                <RoundedBox position={[-2.2, 1.5, 0.2]} args={[0.8, 0.8, 0.2]} radius={0.05}>
                     <meshStandardMaterial color="#ea580c" emissive="#ea580c" emissiveIntensity={0.2} />
                 </RoundedBox>
 
                 {/* Text Lines */}
                 <group position={[0.5, 1.5, 0.2]}>
-                    <RoundedBox position={[0, 0, -0.05]} args={[4, 1.0, 0.1]} radius={0.1}>
+                    <RoundedBox position={[0, 0, -0.05]} args={[4, 1.0, 0.1]} radius={0.04}>
                         <meshStandardMaterial color="#1e293b" transparent opacity={0.5} />
                     </RoundedBox>
                     <RoundedBox position={[0, 0.2, 0.05]} args={[3.5, 0.15, 0.05]} radius={0.02}>
@@ -90,17 +93,17 @@ const DashboardModel = () => {
 
                 {/* 3. Sub-feature Section */}
                 <group position={[1.5, 0.2, 0.2]}>
-                    <RoundedBox position={[0.8, 0, 0]} args={[0.6, 0.6, 0.1]} radius={0.1}>
+                    <RoundedBox position={[0.8, 0, 0]} args={[0.6, 0.6, 0.1]} radius={0.04}>
                         <meshStandardMaterial color="#1e293b" />
                     </RoundedBox>
-                    <RoundedBox position={[-0.5, 0, 0]} args={[1.8, 0.6, 0.1]} radius={0.1}>
+                    <RoundedBox position={[-0.5, 0, 0]} args={[1.8, 0.6, 0.1]} radius={0.04}>
                         <meshStandardMaterial color="#ea580c" />
                     </RoundedBox>
                 </group>
 
                 {/* 4. The Chart Area */}
                 <group position={[-0.2, -1.2, 0.2]}>
-                    <RoundedBox position={[0, 0, -0.05]} args={[5, 2, 0.1]} radius={0.2}>
+                    <RoundedBox position={[0, 0, -0.05]} args={[5, 2, 0.1]} radius={0.04}>
                         <meshStandardMaterial color="#0f172a" transparent opacity={0.8} />
                     </RoundedBox>
                     <group position={[-1.5, -0.8, 0.1]}>
@@ -118,9 +121,23 @@ const DashboardModel = () => {
 };
 
 const Showcase3D = () => {
+    // Responsive camera position
+    const [cameraZ, setCameraZ] = React.useState(6.5);
+
+    React.useEffect(() => {
+        const handleResize = () => {
+            // Move camera back on smaller screens to fit the model
+            setCameraZ(window.innerWidth < 768 ? 9 : 6.5);
+        };
+
+        handleResize(); // Initial check
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     return (
-        <div className="w-full h-full min-h-[400px]">
-            <Canvas camera={{ position: [0, 0, 6.5], fov: 45 }} dpr={[1, 1.5]} performance={{ min: 0.5 }}>
+        <div className="w-full h-full min-h-[300px] md:min-h-[400px]">
+            <Canvas camera={{ position: [0, 0, cameraZ], fov: 45 }} dpr={[1, 1.5]} performance={{ min: 0.5 }}>
                 {/* 1. Base Visibility: Ambient Light (Soft fill) */}
                 <ambientLight intensity={0.8} />
 
