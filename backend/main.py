@@ -121,7 +121,7 @@ def process_query(request: Query):
         db_engine = SQLDatabase.from_uri(f"sqlite:///{DB_PATH}")
         
         llm = ChatGroq(
-            model="llama-3.3-70b-versatile",
+            model="meta-llama/llama-prompt-guard-2-22m",
             temperature=0,
             api_key=key
         )
