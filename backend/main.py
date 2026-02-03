@@ -121,7 +121,7 @@ def process_query(request: Query):
         db_engine = SQLDatabase.from_uri(f"sqlite:///{DB_PATH}")
         
         llm = ChatGroq(
-            model="meta-llama/llama-4-scout-17b-16e-instruct",
+            model="llama-3.3-70b-versatile",
             temperature=0,
             api_key=key
         )
@@ -149,7 +149,7 @@ def process_query(request: Query):
             "\n\nRULES:"
             "\n1. For charts, provide a summary then JSON inside ```json ... ``` blocks."
             "\n2. JSON Format: {\"type\": \"chart\", \"chartType\": \"bar|line|pie|area\", \"data\": [...], \"xAxis\": \"col\", \"yAxis\": \"col\", \"title\": \"text\"}."
-            f"\n3. You have permission to INSERT/UPDATE/DELETE records on '{active_table}' BUT ONLY IF the user explicitly confirms in the  CONVERSATION (e.g. 'yes', 'proceed','ok','continue','go','go ahead',etc.)."
+            f"\n3. You have permission to INSERT/UPDATE/DELETE records on '{active_table}' BUT ONLY IF the user explicitly confirms in the  CONVERSATION (e.g. 'yes', 'proceed','ok','continue','go','go ahead',etc)."
             "\n   - If the user asks to delete/update and hasn't confirmed, DO NOT execute. Instead return: '⚠️ I am about to [action]. Do you want to proceed?'"
             "\n4. ALWAYS append the generated SQL query at the very end of your response in a markdown block like this:\n```sql\nSELECT ...\n```"
             "\n5. CLASSIFICATION RULE:"
