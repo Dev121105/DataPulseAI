@@ -3,7 +3,7 @@ import Tilt from 'react-parallax-tilt';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { RoundedBox, Float, Center } from '@react-three/drei';
 
-// 1. REALTIME -> Bar Chart Icon
+// 1. Bar Chart Icon
 const BarChart3D = ({ color }) => {
     const group = useRef();
     useFrame((state) => {
@@ -28,7 +28,7 @@ const BarChart3D = ({ color }) => {
     );
 };
 
-// 2. STRUCTURED -> Table/Grid Icon
+// 2. Table/Grid Icon
 const Table3D = ({ color }) => {
     const group = useRef();
     useFrame((state) => {
@@ -40,7 +40,6 @@ const Table3D = ({ color }) => {
 
     return (
         <group ref={group}>
-            {/* 2x2 Grid of squares representing a table */}
             {/* Top Row */}
             <RoundedBox position={[-0.5, 0.5, 0]} args={[0.8, 0.8, 0.1]} radius={0.1}>
                 <meshStandardMaterial color={color} roughness={0.3} metalness={0.6} />
@@ -60,28 +59,24 @@ const Table3D = ({ color }) => {
     );
 };
 
-// 3. PERSISTENT -> Download/Save Icon
+// 3. Download Icon
 const Download3D = ({ color }) => {
     const group = useRef();
     useFrame((state) => {
         if (group.current) {
-            // Gentle bobbing motion
             group.current.position.y = Math.sin(state.clock.elapsedTime * 2) * 0.1;
         }
     });
 
     return (
         <group ref={group}>
-            {/* Arrow Shaft */}
             <RoundedBox position={[0, 0.2, 0]} args={[0.3, 1.2, 0.3]} radius={0.1}>
                 <meshStandardMaterial color={color} roughness={0.3} metalness={0.6} />
             </RoundedBox>
-            {/* Arrow Head */}
             <mesh position={[0, -0.6, 0]} rotation={[0, 0, 0]}>
                 <coneGeometry args={[0.6, 0.8, 32]} />
                 <meshStandardMaterial color={color} roughness={0.3} metalness={0.6} />
             </mesh>
-            {/* Tray/Base */}
             <RoundedBox position={[0, -1.2, 0]} args={[1.5, 0.2, 0.5]} radius={0.05}>
                 <meshStandardMaterial color={color} roughness={0.3} metalness={0.6} />
             </RoundedBox>
@@ -93,18 +88,17 @@ const Download3D = ({ color }) => {
 const FeatureCard3D = ({ item, colors }) => {
     // Determine icon based on label
     let IconComponent = BarChart3D;
-    let hexColor = '#f97316'; // Default
+    let hexColor = '#f97316'; 
 
-    // Logic matching LandingPage.jsx data
     if (item.label.includes('REALTIME')) {
         IconComponent = BarChart3D;
-        hexColor = '#f97316'; // Orange
+        hexColor = '#f97316'; 
     } else if (item.label.includes('STRUCTURED')) {
         IconComponent = Table3D;
-        hexColor = '#10b981'; // Emerald
+        hexColor = '#10b981'; 
     } else if (item.label.includes('PERSISTENT')) {
         IconComponent = Download3D;
-        hexColor = '#f59e0b'; // Amber/Yellow
+        hexColor = '#f59e0b'; 
     }
 
     return (

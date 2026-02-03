@@ -8,7 +8,6 @@ const ChartBar = ({ position, height, color, delay }) => {
 
     useFrame((state) => {
         const t = state.clock.getElapsedTime();
-        // Subtle breathing animation for bars
         const scale = 1 + Math.sin(t * 2 + delay) * 0.05;
         if (ref.current) {
             ref.current.scale.y = scale;
@@ -28,7 +27,7 @@ const MouseLight = () => {
     const light = useRef();
     useFrame((state) => {
         if (light.current) {
-            // Ensure mouse values are valid numbers before using
+
             const mx = isNaN(state.mouse.x) ? 0 : state.mouse.x;
             const my = isNaN(state.mouse.y) ? 0 : state.mouse.y;
 
@@ -63,7 +62,6 @@ const DashboardModel = () => {
         <group ref={group}>
             <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
 
-                {/* 1. Main Container - Reduced Radius to safe limit (0.3 < 0.3/2 is false, but safe for 4.5/6) - wait, Z is 0.3. Radius 0.15 is max. */}
                 <RoundedBox args={[6, 4.5, 0.3]} radius={0.1} smoothness={2}>
                     <meshPhysicalMaterial
                         color="#334155"
@@ -73,12 +71,11 @@ const DashboardModel = () => {
                     />
                 </RoundedBox>
 
-                {/* 2. Header Section - Z is 0.2, Max Radius 0.1. Using 0.05 to be safe */}
                 <RoundedBox position={[-2.2, 1.5, 0.2]} args={[0.8, 0.8, 0.2]} radius={0.05}>
                     <meshStandardMaterial color="#ea580c" emissive="#ea580c" emissiveIntensity={0.2} />
                 </RoundedBox>
 
-                {/* Text Lines */}
+                
                 <group position={[0.5, 1.5, 0.2]}>
                     <RoundedBox position={[0, 0, -0.05]} args={[4, 1.0, 0.1]} radius={0.04}>
                         <meshStandardMaterial color="#1e293b" transparent opacity={0.5} />
@@ -91,7 +88,6 @@ const DashboardModel = () => {
                     </RoundedBox>
                 </group>
 
-                {/* 3. Sub-feature Section */}
                 <group position={[1.5, 0.2, 0.2]}>
                     <RoundedBox position={[0.8, 0, 0]} args={[0.6, 0.6, 0.1]} radius={0.04}>
                         <meshStandardMaterial color="#1e293b" />
@@ -101,7 +97,7 @@ const DashboardModel = () => {
                     </RoundedBox>
                 </group>
 
-                {/* 4. The Chart Area */}
+               
                 <group position={[-0.2, -1.2, 0.2]}>
                     <RoundedBox position={[0, 0, -0.05]} args={[5, 2, 0.1]} radius={0.04}>
                         <meshStandardMaterial color="#0f172a" transparent opacity={0.8} />

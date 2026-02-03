@@ -1,7 +1,7 @@
 import React from 'react';
 import Tilt from 'react-parallax-tilt';
 
-// A 3D tilting card for the charts
+// A 3D card for the charts
 const DataCard3D = ({ children, className = "" }) => {
     return (
         <Tilt

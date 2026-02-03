@@ -124,7 +124,6 @@ const Marquee = () => {
 
     return (
         <div ref={marqueeRef} className="bg-orange-500 py-[2vw] flex overflow-hidden border-y border-white/10 my-20 relative">
-            {/* Moving Glow Sweep */}
             <div
                 ref={glowRef}
                 className="absolute top-0 -left-[20%] w-[40%] h-full bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-[30deg] pointer-events-none z-10"
@@ -157,28 +156,25 @@ const Loader = ({ onComplete }) => {
             onComplete: onComplete
         });
 
-        // Initial State
-        gsap.set(logoRef.current, { y: "150vh" }); // Start below screen
-        gsap.set(textRef.current, { width: 0, opacity: 0 }); // Hidden text
-        gsap.set(glowRef.current, { opacity: 0 }); // Hidden glow
+        gsap.set(logoRef.current, { y: "150vh" }); 
+        gsap.set(textRef.current, { width: 0, opacity: 0 }); 
+        gsap.set(glowRef.current, { opacity: 0 }); 
 
         tl
-            // 1. Logo rises from bottom to center
             .to(logoRef.current, {
                 y: 0,
                 duration: 1.2,
                 ease: "power4.out"
             })
-            // 2. Glow appears when centered
             .to(glowRef.current, {
                 opacity: 1,
                 duration: 0.5
-            }, "-=0.3") // Overlap slightly with movement
+            }, "-=0.3") 
 
-            // 3. Wait for 2 blinks (approx 2s since interval is 1s)
+            
             .to({}, { duration: 2.2 })
 
-            // 4. Text appears from left to right (mask reveal)
+            
             .to(textRef.current, {
                 width: "auto",
                 opacity: 1,
@@ -186,7 +182,7 @@ const Loader = ({ onComplete }) => {
                 ease: "power3.out"
             })
 
-            // 5. Hold briefly then fade out
+            
             .to(loaderRef.current, {
                 opacity: 0,
                 duration: 0.8,
@@ -201,16 +197,14 @@ const Loader = ({ onComplete }) => {
         <div ref={loaderRef} className="fixed inset-0 z-[100] bg-black flex items-center justify-center">
             <div className="flex items-center justify-center relative">
 
-                {/* Logo Container - z-10 to stay on top */}
+                
                 <div ref={logoRef} className="relative z-10">
-                    {/* Dynamic Glow - Appears on center */}
+                   
                     <div ref={glowRef} className="absolute inset-[-20px] bg-orange-500/40 blur-3xl rounded-full opacity-0" />
-
-                    {/* 3D Logo - Responsive size */}
+                   
                     <Logo3D className="w-16 h-16 md:w-24 md:h-24" isLoader={true} />
                 </div>
 
-                {/* Text Container - Masked reveal, negative margin to pull closer/behind */}
                 <div ref={textRef} className="overflow-hidden whitespace-nowrap h-16 md:h-24 flex items-center -ml-3 md:-ml-4 pl-3 md:pl-4 z-0">
                     <span className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tighter text-white">DATAPULSE AI</span>
                 </div>
@@ -235,7 +229,6 @@ const LandingPage = ({ onStart }) => {
 
         const ctx = gsap.context(() => {
             // 1. Navbar Enters from Top (First)
-            // 1. Navbar Container (Background) Enters
             gsap.to('nav', {
                 y: 0,
                 opacity: 1,
@@ -243,7 +236,6 @@ const LandingPage = ({ onStart }) => {
                 ease: "power3.out"
             });
 
-            // 2. Navbar Items Stagger In
             gsap.fromTo('.nav-item',
                 { y: -20, opacity: 0 },
                 {
@@ -256,11 +248,10 @@ const LandingPage = ({ onStart }) => {
                 }
             );
 
-            // 2. Main Content Enters (After Navbar COMPLETELY finishes)
-            // Navbar delta = 1s duration + (2 * 0.15 stagger) = 1.3s total
-            const tl = gsap.timeline({ delay: 1 }); // Wait for nav to settle
+            // 2. Main Content Enters 
+            const tl = gsap.timeline({ delay: 1 }); 
 
-            tl.fromTo('.hero-content > div:first-child', // Zap badge
+            tl.fromTo('.hero-content > div:first-child', 
                 { y: 20, opacity: 0 },
                 { y: 0, opacity: 1, duration: 0.8 },
                 "start"
@@ -275,9 +266,9 @@ const LandingPage = ({ onStart }) => {
                         stagger: 0.05,
                         ease: "power3.out"
                     },
-                    "start+=0.85" // Starts immediately after Badge (0.8s) finishes
+                    "start+=0.85" 
                 )
-                .fromTo('.hero-content > p, .hero-content > div:last-child', // Subtext & Buttons
+                .fromTo('.hero-content > p, .hero-content > div:last-child', 
                     { y: 30, opacity: 0 },
                     {
                         y: 0,
@@ -357,27 +348,6 @@ const LandingPage = ({ onStart }) => {
         return () => ctx.revert();
     }, [isLoading]);
 
-    const capabilityColors = {
-        orange: {
-            bg: 'bg-orange-600/10',
-            border: 'border-orange-500/20',
-            text: 'text-orange-500',
-            glow: 'group-hover:shadow-orange-500/20'
-        },
-        emerald: {
-            bg: 'bg-emerald-600/10',
-            border: 'border-emerald-500/20',
-            text: 'text-emerald-500',
-            glow: 'group-hover:shadow-emerald-500/20'
-        },
-        amber: {
-            bg: 'bg-amber-600/10',
-            border: 'border-amber-500/20',
-            text: 'text-amber-500',
-            glow: 'group-hover:shadow-amber-500/20'
-        }
-    };
-
     return (
         <div ref={containerRef} className="min-h-screen text-slate-100 selection:bg-orange-500/30 overflow-x-hidden font-sans">
             {isLoading && <Loader onComplete={() => setIsLoading(false)} />}
@@ -414,7 +384,7 @@ const LandingPage = ({ onStart }) => {
                 />
             </div>
 
-            {/* Navbar: Initially Hidden (opacity-0, -translate-y-full) to prevent FOUC */}
+            {/* Navbar: Initially Hidden */}
             <nav className="fixed top-0 w-full z-50 px-8 py-6 flex justify-between items-center backdrop-blur-xl border-b border-white/5 bg-black/50 opacity-0 -translate-y-full nav-container">
                 <div className="flex items-center gap-3 group cursor-pointer nav-item opacity-0" onClick={() => window.location.reload()}>
                     <div className="relative">
@@ -676,11 +646,6 @@ const LandingPage = ({ onStart }) => {
                     <path d="M 10 100 Q 500 100 990 100" stroke="currentColor" fill="transparent" strokeWidth="2" />
                 </svg>
             </div>
-
-
-
-
-
 
 
             <footer id="contact" className="pt-32 pb-20 border-t border-white/5 bg-black px-6">

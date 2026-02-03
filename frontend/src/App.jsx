@@ -5,7 +5,7 @@ import ChatbotUI from './ChatbotUI';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8001';
 
-// The main app component that handles pages and state
+// The main app component
 function App() {
     const [view, setView] = useState('landing');
     const [file, setFile] = useState(null);

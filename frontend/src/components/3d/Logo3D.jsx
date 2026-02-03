@@ -3,7 +3,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { RoundedBox, useCursor } from '@react-three/drei';
 import * as THREE from 'three';
 
-// The actual 3D drawing of the bot
+//  3D logo bot
 const BotIcon3D = ({ blinkInterval = 3, isLoader = false, isThinking = false }) => {
     const group = useRef();
     const eyesRef = useRef();
@@ -28,8 +28,6 @@ const BotIcon3D = ({ blinkInterval = 3, isLoader = false, isThinking = false }) 
                 desiredTarget.set(swayX, swayY, 5);
             } else if (isLoader) {
                 // Loader Sequence:
-                // 0s - 2.2s: Look Forward
-                // 2.2s+: Look Slightly Right (Smoothly)
                 if (localTime > 2.2) {
                     desiredTarget.set(2, 0, 5);
                 }

@@ -149,7 +149,7 @@ def process_query(request: Query):
             "\n\nRULES:"
             "\n1. For charts, provide a summary then JSON inside ```json ... ``` blocks."
             "\n2. JSON Format: {\"type\": \"chart\", \"chartType\": \"bar|line|pie|area\", \"data\": [...], \"xAxis\": \"col\", \"yAxis\": \"col\", \"title\": \"text\"}."
-            f"\n3. You have permission to UPDATE/DELETE records on '{active_table}' BUT ONLY IF the user explicitly confirms in the  CONVERSATION (e.g. 'yes', 'proceed')."
+            f"\n3. You have permission to INSERT/UPDATE/DELETE records on '{active_table}' BUT ONLY IF the user explicitly confirms in the  CONVERSATION (e.g. 'yes', 'proceed','ok','continue','go','go ahead',etc.)."
             "\n   - If the user asks to delete/update and hasn't confirmed, DO NOT execute. Instead return: '⚠️ I am about to [action]. Do you want to proceed?'"
             "\n4. ALWAYS append the generated SQL query at the very end of your response in a markdown block like this:\n```sql\nSELECT ...\n```"
             "\n5. CLASSIFICATION RULE:"
@@ -179,7 +179,7 @@ def process_query(request: Query):
                     raise e
 
     except Exception as e:
-        traceback.print_exc() # Print error to console
+        traceback.print_exc() 
         raw_err = str(e)
         if "rate_limit" in raw_err or "429" in raw_err:
             return {"answer": "🚀 **Engine Heat:** Too many requests. I tried to cool down but the pulse is still unstable. Please wait a minute."}
