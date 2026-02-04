@@ -149,12 +149,17 @@ def process_query(request: Query):
             "\n\nRULES:"
             "\n1. For charts, provide a summary then JSON inside ```json ... ``` blocks."
             "\n2. JSON Format: {\"type\": \"chart\", \"chartType\": \"bar|line|pie|area\", \"data\": [...], \"xAxis\": \"col\", \"yAxis\": \"col\", \"title\": \"text\"}."
-            f"\n3. You have permission to INSERT/UPDATE/DELETE records on '{active_table}' BUT ONLY IF the user explicitly confirms in the  CONVERSATION (e.g. 'yes', 'proceed','ok','continue','go','go ahead',etc)."
-            "\n   - If the user asks to delete/update and hasn't confirmed, DO NOT execute. Instead return: '⚠️ I am about to [action]. Do you want to proceed?'"
+            f"\n3. You have permission to INSERT/UPDATE/DELETE records on '{active_table}' IF:"
+            "\n   - The user explicitly confirms in the conversation (e.g. 'yes', 'proceed', 'do it')."
+            "\n   - OR The 'PREVIOUS CONVERSATION' shows the Assistant asked for confirmation and the User answered 'yes'."
+            "\n   - If permission is granted, GENERATE the SQL and EXECUTE it."
+            "\n   - If NO valid confirmation is found, DO NOT execute. Instead, use 'Final Answer' to return: '⚠️ I am about to [action]. Do you want to proceed?'"
+            "\n   - DO NOT output 'Action: None'. If you need to stop or ask a question, use 'Final Answer'."
             "\n4. ALWAYS append the generated SQL query at the very end of your response in a markdown block like this:\n```sql\nSELECT ...\n```"
             "\n5. CLASSIFICATION RULE:"
-            "\n   - DATA QUERY (e.g., 'trends', 'average', 'count', 'specific columns', 'plot'): Generae SQL to query the database."
-            "\n   - GENERAL QUERY (e.g., 'what is python?', 'tell me a joke', 'general advice', 'unrelated topics'): Answer directly based on your knowledge. DO NOT generate SQL. DO NOT mention the database."
+            "\n   - DATA OPERATION (e.g., 'trends', 'plot', 'insert', 'add', 'update', 'delete', 'modify', 'count'): Generate SQL to query or modify the database."
+            "\n     * If the user asks to insert/update but details are ambiguous, ask for the specific values using 'Final Answer'."
+            "\n   - GENERAL QUERY (e.g., 'what is python?', 'tell me a joke', 'general advice'): Answer directly based on your knowledge. DO NOT generate SQL."
         )
 
         max_retries = 3
