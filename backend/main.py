@@ -131,7 +131,7 @@ def process_query(request: Query):
             db=db_engine,
             agent_type="zero-shot-react-description",
             verbose=False,
-            handle_parsing_errors=True
+            handle_parsing_errors="Check your output and make sure it conforms, do not output Action: None. If you need to stop or ask a question, use 'Final Answer'.",
         )
 
         # Build context from history
@@ -154,12 +154,22 @@ def process_query(request: Query):
             "\n   - OR The 'PREVIOUS CONVERSATION' shows the Assistant asked for confirmation and the User answered 'yes'."
             "\n   - If permission is granted, GENERATE the SQL and EXECUTE it."
             "\n   - If NO valid confirmation is found, DO NOT execute. Instead, use 'Final Answer' to return: '⚠️ I am about to [action]. Do you want to proceed?'"
-            "\n   - DO NOT output 'Action: None'. If you need to stop or ask a question, use 'Final Answer'."
+            "\n   - NEVER output 'Action: None'. If you don't need to use a tool, use 'Final Answer'."
             "\n4. ALWAYS append the generated SQL query at the very end of your response in a markdown block like this:\n```sql\nSELECT ...\n```"
             "\n5. CLASSIFICATION RULE:"
             "\n   - DATA OPERATION (e.g., 'trends', 'plot', 'insert', 'add', 'update', 'delete', 'modify', 'count'): Generate SQL to query or modify the database."
             "\n     * If the user asks to insert/update but details are ambiguous, ask for the specific values using 'Final Answer'."
             "\n   - GENERAL QUERY (e.g., 'what is python?', 'tell me a joke', 'general advice'): Answer directly based on your knowledge. DO NOT generate SQL."
+            "\n   ### 🧠 Critical Analysis & Reasoning Steps"
+            "\nBefore answering, you must ALWAYS perform these steps:"
+            "\n1.  Understand**: Identify what the user is asking."
+            "\n2.  **Schema Check**: Look at the table structure. Do the columns match the user's terms?"
+            "\n3.  **Plan**: Decide the SQL query."
+            "\n    - If logic is complex, break it down."
+            "\n    - ALWAYS use `LIKE` for string matching (e.g. `Name LIKE '%John%'`) if exact match is unsure."
+            "\n    - Handle `NULL`: Use `COALESCE` or exclude nulls if needed."
+            "\n4.  **Execute**: Run the SQL."
+            "\n5.  **Verify**: Does the output make sense?"
         )
 
         max_retries = 3
