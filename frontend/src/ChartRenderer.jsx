@@ -93,7 +93,7 @@ const ChartRenderer = ({ chartConfig }) => {
   };
 
   return (
-    <div className="w-full h-80 my-4 p-4 bg-slate-900/40 rounded-2xl border border-white/5 ring-1 ring-white/5 overflow-hidden">
+    <div className="w-full h-60 md:h-80 my-4 p-4 bg-slate-900/40 rounded-2xl border border-white/5 ring-1 ring-white/5 overflow-hidden">
       {title && <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-4 ml-1">{title}</h3>}
       <ResponsiveContainer width="100%" height="90%">{renderComponent()}</ResponsiveContainer>
     </div>

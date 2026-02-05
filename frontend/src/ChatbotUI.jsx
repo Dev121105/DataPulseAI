@@ -257,7 +257,7 @@ const ChatbotUI = ({ messages, input, setInput, onSend, onUpload, onDownload, se
                                     {msg.chart && (
                                         <div className="py-4">
                                             <DataCard3D className="w-full md:min-w-[500px]">
-                                                <div className="h-80">
+                                                <div className="h-60 md:h-80">
                                                     <ChartRenderer chartConfig={msg.chart} />
                                                 </div>
                                             </DataCard3D>
